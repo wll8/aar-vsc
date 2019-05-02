@@ -1,0 +1,31 @@
+{
+    "name": "aar-lang",
+    "displayName": "aar lang",
+    "description": "aardio...",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.33.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "languages": [{
+            "id": "aar",
+            "aliases": ["aardio", "aar", "aau"],
+            "extensions": [".aar", ".aau", ".aardio"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [
+            {
+                "language": "aar",
+                "scopeName": "source.aar",
+                "path": "./syntaxes/aar.tmLanguage.json"
+            }
+        ]
+    }
+}

@@ -1,0 +1,51 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "aar",
+	"fileTypes": [
+			"aar",
+			"aau",
+			"aardio"
+	],
+	"patterns": [
+		{
+				"match": "(//).*$",
+				"name": "comment.aar"
+		},
+		{
+				"name": "comment.aar",
+				"begin": "\\/\\******",
+				"end": "\\******\\/",
+				"patterns": [{
+						"name": "comment.aar",
+						"begin": "\\/\\*",
+						"end": "\\*\\/"
+				}]
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.aar",
+				"match": "\\b(var|def|null|and|not|or|begin|end|false|true|if|else|elseif|select|case|for|in|while|do|break|continue|try|catch|class|ctor|function|return|namespace|import|with|this|owner|global|self)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.aar",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.aar",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.aar"
+}

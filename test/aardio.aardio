@@ -1,0 +1,42 @@
+def 如果 = if
+def 否则 = else
+def 否则是 = elseif
+def 名字空间= namespace
+def 循环 = while
+
+
+/**
+多行注释
+**/
+
+//#region
+2442
+//#endregion
+
+
+14 14; 24@ // 单行注释
+
+<!-- 124 -->
+
+<! 132425>
+
+io.open();
+如果 1== 1 {
+  io.print(" 1等于1 ")
+}
+否则{
+  io.print(" 1不等于1 ")
+}
+
+function name(params) {
+  // 注释
+}
+
+<script>
+  function name(par = []) {
+    // 注释
+    par.push(item => {
+      console.log(123)
+    })
+  }
+</script>
