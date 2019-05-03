@@ -1,31 +1,77 @@
 {
-    "name": "aar-lang",
-    "displayName": "aar lang",
-    "description": "aardio...",
-    "version": "0.0.1",
-    "engines": {
-        "vscode": "^1.33.0"
+  "name": "aar-lang",
+  "displayName": "aar lang",
+  "description": "aardio...",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.33.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "keybindings": [
+      {
+        "key": "ctrl+r",
+        "command": "aar.runAll",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+shift+r",
+        "command": "aar.runSelection",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceLangId == aar",
+          "command": "aar.runAll",
+          "group": "aar"
+        },
+        {
+          "when": "resourceLangId == aar",
+          "command": "aar.runSelection",
+          "group": "aar"
+        }
+      ]
     },
-    "categories": [
-        "Programming Languages"
+    "commands": [
+      {
+        "command": "aar.runAll",
+        "title": "运行此文件"
+      },
+      {
+        "command": "aar.runSelection",
+        "title": "运行所选"
+      }
     ],
-    "activationEvents": [
-        "*"
+    "languages": [
+      {
+        "id": "aar",
+        "aliases": [
+          "aardio",
+          "aar",
+          "aau"
+        ],
+        "extensions": [
+          ".aardio",
+          ".aar",
+          ".aau"
+        ],
+        "configuration": "./language-configuration.json"
+      }
     ],
-    "main": "./extension.js",
-    "contributes": {
-        "languages": [{
-            "id": "aar",
-            "aliases": ["aardio", "aar", "aau"],
-            "extensions": [".aar", ".aau", ".aardio"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [
-            {
-                "language": "aar",
-                "scopeName": "source.aar",
-                "path": "./syntaxes/aar.tmLanguage.json"
-            }
-        ]
-    }
+    "grammars": [
+      {
+        "language": "aar",
+        "scopeName": "source.aar",
+        "path": "./syntaxes/aar.tmLanguage.json"
+      }
+    ]
+  }
 }
