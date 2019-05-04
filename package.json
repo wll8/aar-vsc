@@ -3,6 +3,9 @@
   "displayName": "aar lang",
   "description": "aardio...",
   "version": "0.0.1",
+  "scripts": {
+    "test": "nodemon -q --watch t.js --exec node t.js"
+  },
   "engines": {
     "vscode": "^1.33.0"
   },

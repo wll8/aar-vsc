@@ -1,6 +1,8 @@
 const vscode = require('vscode');
 const { exec } = require('child_process')
 const fs = require('fs')
+const {convert} = require('./t.js')
+// convert = []
 
 const aar = String.raw`aar.exe` // 解释器， 目前运行目录和解释器都必须位于 aardio.exe 所在目录
 /** 解释器源码雏形
@@ -59,9 +61,6 @@ function activate(context) {
 
   });
 
-
-  // 示例: https://github.com/Microsoft/vscode-extension-samples/blob/master/completions-sample/src/extension.ts
-  // https://www.kancloud.cn/shangyewangchuan/vs_code/972973
   // 通过 CompletionItemProvider 实现自动完成
   let provider = vscode.languages.registerCompletionItemProvider('aar', { // languages.id
     provideCompletionItems: (document, position) => {
@@ -111,12 +110,31 @@ function activate(context) {
     }
   }, ['.']) // 键入 . 时触发
 
+  const provider3 = vscode.languages.registerCompletionItemProvider('aar', {
+    provideCompletionItems(document, position) {
+      const arr = convert.map(item => {
+
+
+        const snippetCompletion = new vscode.CompletionItem(item.completionItem);
+        // 插入文档
+        snippetCompletion.insertText = new vscode.SnippetString(item.insertText);
+        // 图标
+        snippetCompletion.kind = vscode.CompletionItemKind[item.kind];
+        // 提示的文档
+        snippetCompletion.documentation = item.documentation;
+        return snippetCompletion
+      })
+      return arr;
+    }
+  })
+
   // 注册命令会返回一个可清理的对象。将此对象添加到 插件上下文中的 subscriptions 列表中。以便在不需要时 vscode 可以清理此插件命令占用的资源
   context.subscriptions.push(
     runSelection,
     runAll,
     provider,
     provider2,
+    provider3,
   );
 
 }
