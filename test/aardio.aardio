@@ -5,6 +5,7 @@ def 名字空间= namespace
 def 循环 = while
 
 
+
 /**
 多行注释
 **/
@@ -32,11 +33,3 @@ function name(params) {
   // 注释
 }
 
-<script>
-  function name(par = []) {
-    // 注释
-    par.push(item => {
-      console.log(123)
-    })
-  }
-</script>

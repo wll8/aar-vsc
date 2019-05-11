@@ -1,3 +1,5 @@
+// aau
+
 io.open();//打开控制台
 
 import winex;
@@ -19,5 +21,6 @@ win.close(窗口句柄)
 execute("pause") //按任意键继续
 io.close();//关闭控制台
 
-type.
+aa console.  .a asdf
+do{标记:}while( )
 

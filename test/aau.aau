@@ -1,32 +1,40 @@
-def 如果 = if
-def 否则 = else
-def 否则是 = elseif
-def 名字空间= namespace
-def 循环 = while
+﻿import win
+win.msgbox(1)
+win.msgbox(2)
 
-io.open();
 
-如果 1== 1 {
-    io.print(" 1等于1 ")
+import console
+console.log(1)
+
+
+//入门
+
+import console;
+
+console.box(,,60,10,31,"请输入文本:" )
+var str = console.getText( "请输入文本:" )
+
+console.clearScreen ();//清屏
+var num = console.getNumber( "请输入数值:" ); //输入错误数值自动重试
+var arr = { str;num }
+
+//输出变量到控制台
+console.varDump( arr )
+
+//输出变量到控制台
+console.dump( arr )
+
+//以JSON格式输出变量到控制台
+console.dumpJson( arr )
+
+//将控制台窗口的文本再读到字符串中
+str = console.readOutputCharacter()
+console.log( "--------------------------" )
+console.log( str )
+
+for(i=1;25;1){
+	console.printf("%d -> 20",i );
+	console.more( 10 ); //分页显示
 }
-否则{
-    io.print(" 1不等于1 ")
-}
 
-
-
-a
-(
-// 这是注释吗
-    b
-)
-x
-(
-    // 23433535
-    (
-        c
-        xyz
-    )
-)
-(
-a
+console.pause()

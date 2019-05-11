@@ -17,10 +17,7 @@ const aardio = String.raw`C:\git2\aardio` // aar 库根目录
 const warn = (msg = '没有得到任何代码') => vscode.window.showWarningMessage(msg)
 
 function activate(context) {
-  let _isRunning = false
-  let _process
-
-  let aarOut = vscode.window.createOutputChannel('aar');
+  let aarTerminal = vscode.window.createTerminal('aar');
 
   const run = (path, code) => { // 根据路径或源码运行 aar , 传源码时路径为空
     if (!path && code) {
@@ -34,38 +31,9 @@ function activate(context) {
     // let cmd = `cd /d ${aardio} && cmd /c start cmd /c ${aar} ${path}` // 在弹出的 cmd 中运行
     console.log('cmd', cmd)
 
-    
-    _isRunning = true;
-    aarOut.clear()
-    aarOut.show(true) // true 保持编辑器中的焦点
-    aarOut.appendLine('[运行] ' + cmd);
-    const startTime = new Date();
-    
-    _process = exec(cmd, { cwd: '' }); // cwd 工作目录
-    _process.stdout.on('data', (data) => { // 捕获并输入正常信息
-      aarOut.append(data);
-    });
+    aarTerminal.show(true)
+    aarTerminal.sendText(cmd)
 
-    _process.stderr.on('data', (data) => { // 捕获并输出错误信息
-      aarOut.append(data);
-    });
-
-    _process.on('close', (code) => { // 进程结束
-      _isRunning = false;
-      const endTime = new Date();
-      const elapsedTime = (endTime.getTime() - startTime.getTime()) / 1000;
-      aarOut.appendLine('');
-      aarOut.appendLine('[结束] 耗时 ' + elapsedTime + ' 秒，退出码 ' + code + ' 。');
-      aarOut.appendLine('');
-    });
-
-  }
-
-  const stopRunning = () => {
-    if (_isRunning) {
-      _isRunning = false;
-      exec(`taskkill /f /t /pid ${_process.pid}`)
-    }
   }
 
   let runSelection = vscode.commands.registerCommand('aar.runSelection', function () {
@@ -85,10 +53,6 @@ function activate(context) {
   });
 
   let runAll = vscode.commands.registerCommand('aar.runAll', function () {
-    if (_isRunning) {
-      vscode.window.showInformationMessage('代码已在运行中');
-      return;
-    }
 
     // 运行当前文件
     let editor = vscode.window.activeTextEditor
@@ -105,8 +69,6 @@ function activate(context) {
     }
 
   });
-
-  let stop = vscode.commands.registerCommand('aar.stop', stopRunning);
 
   // 通过 CompletionItemProvider 实现自动完成
   let provider = vscode.languages.registerCompletionItemProvider('aar', { // languages.id
@@ -178,7 +140,7 @@ function activate(context) {
   // 注册命令会返回一个可清理的对象。将此对象添加到 插件上下文中的 subscriptions 列表中。以便在不需要时 vscode 可以清理此插件命令占用的资源
   context.subscriptions.push(
     runAll,
-    stop,
+    runSelection,
     provider,
     provider2,
     provider3,
