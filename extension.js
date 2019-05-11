@@ -17,9 +17,21 @@ const aardio = String.raw`C:\git2\aardio` // aar 库根目录
 const warn = (msg = '没有得到任何代码') => vscode.window.showWarningMessage(msg)
 
 function activate(context) {
-  let aarTerminal = vscode.window.createTerminal('aar');
+  let isNewTerminal = false;
+  let aarTerminal = null
+  
+  vscode.window.onDidCloseTerminal(() => {  // 标记整个终端程序被关闭时后
+    aarTerminal = null
+  });
 
   const run = (path, code) => { // 根据路径或源码运行 aar , 传源码时路径为空
+      
+    if (aarTerminal === null) {
+      aarTerminal = vscode.window.createTerminal('aar');
+      aarTerminal.sendText(`set path=%path%;${aardio}`)
+      aarTerminal.sendText('cls')
+      isNewTerminal = true;
+    }
     if (!path && code) {
       path = String.raw`${require('os').tmpdir()}\aar_${Date.now()}.aardio`
       fs.writeFile(path, code, (err) => {
@@ -32,7 +44,10 @@ function activate(context) {
     console.log('cmd', cmd)
 
     aarTerminal.show(true)
-    aarTerminal.sendText(cmd)
+    // aarTerminal.sendText(`cd /d ${aardio}`)
+    // aarTerminal.sendText(`${aar} ${path}`)
+    // aarTerminal.sendText(cmd)
+    aarTerminal.sendText(`${aar} ${path}`)
 
   }
 
@@ -60,8 +75,10 @@ function activate(context) {
       let code = editor.document.getText()
       if (code.length > 0) {
         // fsPath 是以系统为基准的路径: [path => /C:/git] [fsPath => c:\git]
-        let file = editor._documentData._uri.fsPath
-        run(file)
+        // let file = editor._documentData._uri.fsPath
+        // run(file)
+        // 直接使用源文件去运行时 arr 会把改变源文件的编码为 utf8bom
+        run('', code)
       }
       else {
         warn()
