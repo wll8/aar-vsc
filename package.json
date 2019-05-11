@@ -30,6 +30,13 @@
       }
     ],
     "menus": {
+      "editor/title": [
+        {
+          "when": "resourceLangId == aar",
+          "command": "aar.runAll",
+          "group": "navigation"
+        }
+      ],
       "editor/context": [
         {
           "when": "resourceLangId == aar",
@@ -38,7 +45,7 @@
         },
         {
           "when": "resourceLangId == aar",
-          "command": "aar.runSelection",
+          "command": "aar.stop",
           "group": "aar"
         }
       ]
@@ -46,11 +53,11 @@
     "commands": [
       {
         "command": "aar.runAll",
-        "title": "运行此文件"
+        "title": "运行"
       },
       {
-        "command": "aar.runSelection",
-        "title": "运行所选"
+        "command": "aar.stop",
+        "title": "停止"
       }
     ],
     "languages": [
