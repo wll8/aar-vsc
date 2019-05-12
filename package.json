@@ -17,6 +17,17 @@
   ],
   "main": "./extension.js",
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "aardio",
+      "properties": {
+          "aar.aardioDir": {
+            "type": "string",
+            "default": "",
+            "description": "设置您所使用的 aardio.exe 主程序所在目录为运行环境。"
+          }
+      }
+  },
     "keybindings": [
       {
         "key": "ctrl+r",
@@ -41,19 +52,23 @@
         {
           "when": "resourceLangId == aar",
           "command": "aar.runAll",
-          "group": "aar"
+          "group": "navigation@1"
         },
         {
           "when": "resourceLangId == aar",
           "command": "aar.runSelection",
-          "group": "aar"
+          "group": "navigation@2"
         }
       ]
     },
     "commands": [
       {
         "command": "aar.runAll",
-        "title": "运行此文件"
+        "title": "运行此文件",
+        "icon": {
+          "light": "./img/run-light.png",
+          "dark": "./img/run-dark.png"
+        }
       },
       {
         "command": "aar.runSelection",

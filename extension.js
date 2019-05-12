@@ -6,32 +6,35 @@ const absPath = str => path.join(__dirname, str)
 const {convert} = require('./t.js')
 // convert = []
 
-const aar = `aar` // 解释器， 目前运行目录和解释器都必须位于 aardio.exe 所在目录
+const aar = 'aar.exe' // 解释器， 目前运行目录和解释器都必须位于 aardio.exe 所在目录
 /** 解释器源码雏形
  * arg = _CMDLINE || '';
  * loadcode(arg)()
  */
 
-const aardio = absPath(`aardio`) // aar 库根目录
-// const aardio = `C:\\git2\\aardio` // aar 库根目录
-
-
-
 const warn = (msg = '没有得到任何代码') => vscode.window.showWarningMessage(msg)
+
+const aardioDir = vscode.workspace.getConfiguration().get('aar.aardioDir') || absPath(`./aardio`) // aardio 库根目录
+console.log('aardioDir', aardioDir)
+fs.exists(aardioDir, exists => {
+  if(!exists){
+    warn('请检查 aardio.exe 所在目录是否配置正确')
+  }
+})
 
 // 文档选择器, 使用此对象, 而不是直接 'aar'. https://github.com/bazelbuild/vscode-bazel/issues/47
 const selectors = { scheme: 'file', language: 'aar' }
 
 const activate = context => {
-
-  const aarFile = `${aardio}\\aar.exe`
+    
+  const aarFile = `${aardioDir}\\aar.exe`
   console.log('aarFileaarFile', aarFile)
   fs.exists(aarFile, exists => {
     if(!exists){
       fs.writeFileSync(aarFile, fs.readFileSync(absPath('./aar.exe'))) // 复制文件
       // const cmd = `copy ${absPath('./aar.exe')} ${aarFile}`
       // exec(cmd)
-      const cmd = `attrib +s +h ${aarFile}` // 让目录看起来没有多余的文件
+      const cmd = `attrib +h ${aarFile}` // 让目录看起来没有多余的文件
       exec(cmd)
     }
   })
@@ -46,7 +49,7 @@ const activate = context => {
       
     if (aarTerminal === null) {
       aarTerminal = vscode.window.createTerminal('aar');
-      aarTerminal.sendText(`set path=%path%;${aardio}&&cls`)
+      aarTerminal.sendText(`set path=%path%;${aardioDir}&&cls`)
     }
     if (!path && code) {
       path = `${require('os').tmpdir()}\\aar_${Date.now()}.aardio` // 保存到系统临时目录
