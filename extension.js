@@ -1,23 +1,41 @@
 const vscode = require('vscode');
 const { exec } = require('child_process')
 const fs = require('fs')
+const path = require('path')
+const absPath = str => path.join(__dirname, str)
 const {convert} = require('./t.js')
 // convert = []
 
-const aar = String.raw`aar.exe` // 解释器， 目前运行目录和解释器都必须位于 aardio.exe 所在目录
+const aar = `aar` // 解释器， 目前运行目录和解释器都必须位于 aardio.exe 所在目录
 /** 解释器源码雏形
  * arg = _CMDLINE || '';
  * loadcode(arg)()
  */
 
-const aardio = String.raw`C:\git2\aardio` // aar 库根目录
+const aardio = absPath(`aardio`) // aar 库根目录
+// const aardio = `C:\\git2\\aardio` // aar 库根目录
 
 
 
 const warn = (msg = '没有得到任何代码') => vscode.window.showWarningMessage(msg)
 
-function activate(context) {
-  let isNewTerminal = false;
+// 文档选择器, 使用此对象, 而不是直接 'aar'. https://github.com/bazelbuild/vscode-bazel/issues/47
+const selectors = { scheme: 'file', language: 'aar' }
+
+const activate = context => {
+
+  const aarFile = `${aardio}\\aar.exe`
+  console.log('aarFileaarFile', aarFile)
+  fs.exists(aarFile, exists => {
+    if(!exists){
+      fs.writeFileSync(aarFile, fs.readFileSync(absPath('./aar.exe'))) // 复制文件
+      // const cmd = `copy ${absPath('./aar.exe')} ${aarFile}`
+      // exec(cmd)
+      const cmd = `attrib +s +h ${aarFile}` // 让目录看起来没有多余的文件
+      exec(cmd)
+    }
+  })
+  
   let aarTerminal = null
   
   vscode.window.onDidCloseTerminal(() => {  // 标记整个终端程序被关闭时后
@@ -28,20 +46,18 @@ function activate(context) {
       
     if (aarTerminal === null) {
       aarTerminal = vscode.window.createTerminal('aar');
-      aarTerminal.sendText(`set path=%path%;${aardio}`)
-      aarTerminal.sendText('cls')
-      isNewTerminal = true;
+      aarTerminal.sendText(`set path=%path%;${aardio}&&cls`)
     }
     if (!path && code) {
-      path = String.raw`${require('os').tmpdir()}\aar_${Date.now()}.aardio`
+      path = `${require('os').tmpdir()}\\aar_${Date.now()}.aardio` // 保存到系统临时目录
       fs.writeFile(path, code, (err) => {
         if (err) throw err
       });
     }
   
-    let cmd = `cd /d ${aardio} && ${aar} ${path}`
+    // let cmd = `cd /d ${aardio} && ${aar} ${path}`
     // let cmd = `cd /d ${aardio} && cmd /c start cmd /c ${aar} ${path}` // 在弹出的 cmd 中运行
-    console.log('cmd', cmd)
+    // console.log('cmd', cmd)
 
     aarTerminal.show(true)
     // aarTerminal.sendText(`cd /d ${aardio}`)
@@ -51,7 +67,7 @@ function activate(context) {
 
   }
 
-  let runSelection = vscode.commands.registerCommand('aar.runSelection', function () {
+  let runSelection = vscode.commands.registerCommand('aar.runSelection', () => {
     // 运行所选内容
     let editor = vscode.window.activeTextEditor
     if (editor) {
@@ -67,7 +83,7 @@ function activate(context) {
 
   });
 
-  let runAll = vscode.commands.registerCommand('aar.runAll', function () {
+  let runAll = vscode.commands.registerCommand('aar.runAll', () => {
 
     // 运行当前文件
     let editor = vscode.window.activeTextEditor
@@ -88,7 +104,7 @@ function activate(context) {
   });
 
   // 通过 CompletionItemProvider 实现自动完成
-  let provider = vscode.languages.registerCompletionItemProvider('aar', { // languages.id
+  let provider = vscode.languages.registerCompletionItemProvider(selectors, { // languages.id
     provideCompletionItems: (document, position) => {
       // 普通的自动补全
       const simpleCompletion = new vscode.CompletionItem('this');
@@ -120,7 +136,7 @@ function activate(context) {
   })
 
   // 自动提示 console 下的几个方法
-  const provider2 = vscode.languages.registerCompletionItemProvider('aar', {
+  const provider2 = vscode.languages.registerCompletionItemProvider(selectors, {
     provideCompletionItems(document, position) {
       // position 返回了当前在第几行， 第几个字符位置
       let linePrefix = document.lineAt(position).text.substr(0, position.character);
@@ -136,7 +152,7 @@ function activate(context) {
     }
   }, ['.']) // 键入 . 时触发
 
-  const provider3 = vscode.languages.registerCompletionItemProvider('aar', {
+  const provider3 = vscode.languages.registerCompletionItemProvider(selectors, {
     provideCompletionItems(document, position) {
       const arr = convert.map(item => {
 

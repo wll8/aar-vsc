@@ -1,9 +1,10 @@
 process.stdout.write('\33c\33[3J')
 const fs = require('fs')
 const path = require('path')
+const absPath = str => path.join(__dirname, str)
 console.log('__dirname', __dirname)
 console.log('process.cwd()', process.cwd())
-const data = fs.readFileSync(path.join(__dirname, './intellisense/kernel.txt'), 'utf8');
+const data = fs.readFileSync(absPath('./aardio/config/intellisense/kernel.txt'), 'utf8');
 // const data = ''
 
 const linesRaw = data || String.raw`
