@@ -1,5 +1,9 @@
 // aau
 
+array.forEach(element => {
+	var num = 1234
+});
+
 io.open();//打开控制台
 
 import winex;

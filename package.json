@@ -98,6 +98,16 @@
         "language": "aar",
         "scopeName": "source.aar",
         "path": "./syntaxes/aar.tmLanguage.json"
+      },
+      {
+        "scopeName": "source.aar.regexp",
+        "path": "./syntaxes/Regular Expressions (aar).tmLanguage"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "aar",
+        "path": "./snippets/aar.json"
       }
     ]
   }
