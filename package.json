@@ -64,6 +64,7 @@
     "commands": [
       {
         "command": "aar.runAll",
+        "category": "aardio",
         "title": "运行此文件",
         "icon": {
           "light": "./img/run-light.png",
@@ -72,6 +73,7 @@
       },
       {
         "command": "aar.runSelection",
+        "category": "aardio",
         "title": "运行所选"
       }
     ],
