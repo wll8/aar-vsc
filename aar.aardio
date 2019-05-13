@@ -1,0 +1,3 @@
+arg = _CMDLINE || '';
+t = string.split(arg, ' ')
+loadcode(t[1])()
