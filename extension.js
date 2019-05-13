@@ -26,15 +26,11 @@ fs.exists(aardioDir, exists => {
 const selectors = { scheme: 'file', language: 'aar' }
 
 const activate = context => {
-    
-  const aarFile = `${aardioDir}\\aar.exe`
-  console.log('aarFileaarFile', aarFile)
-  fs.exists(aarFile, exists => {
+  const aarExe = `${aardioDir}\\${aar}`
+  fs.exists(aarExe, exists => {
     if(!exists){
-      fs.writeFileSync(aarFile, fs.readFileSync(absPath('./aar.exe'))) // 复制文件
-      // const cmd = `copy ${absPath('./aar.exe')} ${aarFile}`
-      // exec(cmd)
-      const cmd = `attrib +h ${aarFile}` // 让目录看起来没有多余的文件
+      fs.writeFileSync(aarExe, fs.readFileSync(absPath('./aar.exe'))) // 复制文件
+      const cmd = `attrib +h ${aarExe}` // 让目录看起来没有多余的文件
       exec(cmd)
     }
   })
@@ -45,59 +41,46 @@ const activate = context => {
     aarTerminal = null
   });
 
-  const run = (path, code) => { // 根据路径或源码运行 aar , 传源码时路径为空
+  const run = (code, editor) => {
+    let codeFile = `${require('os').tmpdir()}\\aar_${Date.now()}.aardio` // 保存到系统临时目录
+    fs.writeFile(codeFile, code, (err) => {
+      if (err) throw err
+    });
+
+    let cmd = `pushd ${aardioDir} && ${aar} ${codeFile} && popd`
+    let codeDir = editor ? path.parse(editor._documentData._uri.fsPath).dir : ''
+    if(1) { // true: 在 vscode 终端运行. false: 在新开 cmd 中运行. 新开 cmd 仿真度高.
+      if (aarTerminal === null) {
+        aarTerminal = vscode.window.createTerminal('aar');
+      }
+      aarTerminal.show(true)
+      aarTerminal.sendText(cmd)
+    } else {
+      if(1) { // true: 运行完成保留窗口
+        // 两个 cmd 为了保证开启一个 cmd 窗口
+        exec(`cmd /c start cmd /c "pushd ${aardioDir} && ${aar} ${codeFile} && pushd ${codeDir} && echo 运行结束, 按任意键关闭窗口 && pause>null"`)
+      } else {
+        exec(`cmd /c start cmd /k "pushd ${aardioDir} && ${aar} ${codeFile} && pushd ${codeDir}"`)
+      }
       
-    if (aarTerminal === null) {
-      aarTerminal = vscode.window.createTerminal('aar');
-      aarTerminal.sendText(`set path=%path%;${aardioDir}&&cls`)
     }
-    if (!path && code) {
-      path = `${require('os').tmpdir()}\\aar_${Date.now()}.aardio` // 保存到系统临时目录
-      fs.writeFile(path, code, (err) => {
-        if (err) throw err
-      });
-    }
-  
-    // let cmd = `cd /d ${aardio} && ${aar} ${path}`
-    // let cmd = `cd /d ${aardio} && cmd /c start cmd /c ${aar} ${path}` // 在弹出的 cmd 中运行
-    // console.log('cmd', cmd)
-
-    aarTerminal.show(true)
-    // aarTerminal.sendText(`cd /d ${aardio}`)
-    // aarTerminal.sendText(`${aar} ${path}`)
-    // aarTerminal.sendText(cmd)
-    aarTerminal.sendText(`${aar} ${path}`)
-
+    
   }
 
-  let runSelection = vscode.commands.registerCommand('aar.runSelection', () => {
-    // 运行所选内容
-    let editor = vscode.window.activeTextEditor
-    if (editor) {
-      let selection = editor.selection;
-      let code = editor.document.getText(selection);
-      if (code) {
-        run('', code)
-      }
-      else {
-        warn()
-      }
-    }
-
-  });
 
   let runAll = vscode.commands.registerCommand('aar.runAll', () => {
 
-    // 运行当前文件
     let editor = vscode.window.activeTextEditor
     if (editor) {
-      let code = editor.document.getText()
+      
+      let selection = editor.selection
+      let code = editor.document.getText(selection) || editor.document.getText()
       if (code.length > 0) {
         // fsPath 是以系统为基准的路径: [path => /C:/git] [fsPath => c:\git]
         // let file = editor._documentData._uri.fsPath
         // run(file)
         // 直接使用源文件去运行时 arr 会把改变源文件的编码为 utf8bom
-        run('', code)
+        run(code, editor)
       }
       else {
         warn()
@@ -176,7 +159,6 @@ const activate = context => {
   // 注册命令会返回一个可清理的对象。将此对象添加到 插件上下文中的 subscriptions 列表中。以便在不需要时 vscode 可以清理此插件命令占用的资源
   context.subscriptions.push(
     runAll,
-    runSelection,
     provider,
     provider2,
     provider3,
