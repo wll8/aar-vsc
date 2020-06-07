@@ -62,18 +62,19 @@ const activate = context => {
       if (err) throw err
     });
 
+    let cmd = `pushd ${config.aardioDir} && ${aar} ${codeFile} && popd`
     let codeDir = editor ? path.parse(editor._documentData._uri.fsPath).dir : ''
     if(config.runInvscodeTerminal) { // true: 在 vscode 终端运行. false: 在新开 cmd 中运行. 新开 cmd 仿真度高.
       if (aarTerminal === null) {
         aarTerminal = vscode.window.createTerminal('aar');
       }
       aarTerminal.show(true)
-      let cmd = `pushd ${config.aardioDir} && ${aar} ${codeFile} && popd`
       aarTerminal.sendText(cmd)
     } else {
       const keepWindow = config.keepWindow
       // 两个 cmd 为了保证开启一个 cmd 窗口
-      keepWindow === `keyExit` && exec(`cmd /c start cmd /c "pushd ${config.aardioDir} && ${aar} ${codeFile} && pushd ${codeDir} && echo. && echo Press any key to close. && pause>null"`)
+      keepWindow === `noWin` && exec(cmd)
+      keepWindow === `keyExit` && exec(`cmd /c start cmd /c "pushd ${config.aardioDir} && ${aar} ${codeFile} && pushd ${codeDir} && echo. && echo Press any key to close. && pause>nul"`)
       keepWindow === `exit` && exec(`cmd /c start cmd /c "pushd ${config.aardioDir} && ${aar} ${codeFile} && pushd ${codeDir}"`)
       keepWindow === `keep` && exec(`cmd /c start cmd /k "pushd ${config.aardioDir} && ${aar} ${codeFile} && pushd ${codeDir}"`)
     }
