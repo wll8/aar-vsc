@@ -1,6 +1,8 @@
-# 关于 aar-vsc
+# 关于 aar-vscode
 在 vscode 中编写和运行 aardio 代码.  
 优先保证基本的编码体验, 然后尝试添加其他功能.  
+
+![图片演示](https://cdn.jsdelivr.net/gh/wll8/static/aar-vsc.gif)
 
 源码地址: https://github.com/wll8/aar-vsc , 欢迎参与开发.
 
@@ -13,27 +15,7 @@
 - 代码片段, 常用而快捷的代码片段支持
 
 ## 提示
-插件默认的 aardio 运行环境为 v26.5,  
+本插件自带 aardio 核心运行环境, 可自行更改.
 
-## 已知的问题
-嵌套注释中的第二层注释不能正确显示。
-
-## 更新日志
-
-### 1.0.1
-增加运行方式设置
-- `runInvscodeTerminal` 在 vscode 终端中运行
-- `keepWindow` 运行结束后的操作(非 vscode 终端运行时可用)
-  - `keyExit` 按键退出
-  - `exit` 直接退出
-  - `keep` 保留控制台
-- 修改运行快捷键为 f5
-
-### 1.0.0
-- 运行文件(ctrl+r)
-- 运行所选内容(ctrl+r)
-- 语法高亮
-- 自动补全
-- 补全过程中显示函数使用方法
-- 代码片段, 常用而快捷的代码片段支持
-
+## 相关资源
+- 在线文档: https://www.hongqiye.com/doc/aardio/

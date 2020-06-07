@@ -1,9 +1,10 @@
 {
-  "name": "aar-lang",
-  "displayName": "aar lang",
-  "description": "aardio...",
-  "version": "0.0.1",
+  "name": "aar-vsc",
+  "displayName": "aar-vscode",
+  "description": "在 vscode 中编写和运行 aardio 代码",
+  "version": "1.0.1",
   "publisher": "xw",
+  "icon": "favicon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/wll8/aar-vsc"
@@ -34,8 +35,8 @@
         },
         "aar.keepWindow": {
           "type": "string",
-          "default": "exit",
-          "description": "运行结束后的操作(非 vscode 终端运行时可用), keyExit 按键退出, exit 直接退出, keep 保留控制台"
+          "default": "noWin",
+          "description": "运行结束后的操作(非 vscode 终端运行时可用), noWin 不另开窗口运行, keyExit 按键退出, exit 直接退出, keep 保留控制台"
         },
         "aar.runInvscodeTerminal": {
           "type": "boolean",
