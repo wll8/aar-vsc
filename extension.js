@@ -14,9 +14,23 @@ const aar = 'aar.exe' // 解释器， 目前运行目录和解释器都必须位
 
 const warn = (msg = '没有得到任何代码') => vscode.window.showWarningMessage(msg)
 
-const aardioDir = vscode.workspace.getConfiguration().get('aar.aardioDir') || absPath(`./aardio`) // aardio 库根目录
-console.log('aardioDir', aardioDir)
-fs.exists(aardioDir, exists => {
+const getConfig = () => {
+  const config = {...vscode.workspace.getConfiguration(`aar`)}
+  console.log('config', config)
+  Object.keys(config).forEach(key => {
+    const val = config[key]
+    if(val === `` || val === undefined) {
+      key === `aardioDir` && (config[key] = absPath(`./aardio`));
+      key === `keepWindow` && (config[key] = `exit`);
+      key === `runInvscodeTerminal` && (config[key] = false);
+    }
+  })
+  console.log('config2', config)
+  return config
+}
+const config = getConfig()
+
+fs.exists(config.aardioDir, exists => {
   if(!exists){
     warn('请检查 aardio.exe 所在目录是否配置正确')
   }
@@ -26,7 +40,7 @@ fs.exists(aardioDir, exists => {
 const selectors = { scheme: 'file', language: 'aar' }
 
 const activate = context => {
-  const aarExe = `${aardioDir}\\${aar}`
+  const aarExe = `${config.aardioDir}\\${aar}`
   fs.exists(aarExe, exists => {
     if(!exists){
       fs.writeFileSync(aarExe, fs.readFileSync(absPath('./aar.exe'))) // 复制文件
@@ -42,27 +56,26 @@ const activate = context => {
   });
 
   const run = (code, editor) => {
+    const config = getConfig()
     let codeFile = `${require('os').tmpdir()}\\aar_${Date.now()}.aardio` // 保存到系统临时目录
     fs.writeFile(codeFile, code, (err) => {
       if (err) throw err
     });
 
-    let cmd = `pushd ${aardioDir} && ${aar} ${codeFile} && popd`
     let codeDir = editor ? path.parse(editor._documentData._uri.fsPath).dir : ''
-    if(1) { // true: 在 vscode 终端运行. false: 在新开 cmd 中运行. 新开 cmd 仿真度高.
+    if(config.runInvscodeTerminal) { // true: 在 vscode 终端运行. false: 在新开 cmd 中运行. 新开 cmd 仿真度高.
       if (aarTerminal === null) {
         aarTerminal = vscode.window.createTerminal('aar');
       }
       aarTerminal.show(true)
+      let cmd = `pushd ${config.aardioDir} && ${aar} ${codeFile} && popd`
       aarTerminal.sendText(cmd)
     } else {
-      if(1) { // true: 运行完成保留窗口
-        // 两个 cmd 为了保证开启一个 cmd 窗口
-        exec(`cmd /c start cmd /c "pushd ${aardioDir} && ${aar} ${codeFile} && pushd ${codeDir} && echo 运行结束, 按任意键关闭窗口 && pause>null"`)
-      } else {
-        exec(`cmd /c start cmd /k "pushd ${aardioDir} && ${aar} ${codeFile} && pushd ${codeDir}"`)
-      }
-      
+      const keepWindow = config.keepWindow
+      // 两个 cmd 为了保证开启一个 cmd 窗口
+      keepWindow === `keyExit` && exec(`cmd /c start cmd /c "pushd ${config.aardioDir} && ${aar} ${codeFile} && pushd ${codeDir} && echo. && echo Press any key to close. && pause>null"`)
+      keepWindow === `exit` && exec(`cmd /c start cmd /c "pushd ${config.aardioDir} && ${aar} ${codeFile} && pushd ${codeDir}"`)
+      keepWindow === `keep` && exec(`cmd /c start cmd /k "pushd ${config.aardioDir} && ${aar} ${codeFile} && pushd ${codeDir}"`)
     }
     
   }

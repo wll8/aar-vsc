@@ -6,7 +6,7 @@
   "publisher": "xw",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wll8/doc/tree/master/aardio"
+    "url": "https://github.com/wll8/aar-vsc"
   },
   "scripts": {
     "test": "nodemon -q --watch t.js --exec node t.js"
@@ -18,24 +18,35 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "onLanguage:aar"
+    "onLanguage:aar",
+    "onLanguage:aau",
+    "onLanguage:aardio"
   ],
   "main": "./extension.js",
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "aardio",
+      "title": "aar-vsc - aardio",
       "properties": {
-          "aar.aardioDir": {
-            "type": "string",
-            "default": "",
-            "description": "设置您所使用的 aardio.exe 主程序所在目录为运行环境。"
-          }
+        "aar.aardioDir": {
+          "type": "string",
+          "description": "aardio.exe 主程序所在目录(用于使用核心库)"
+        },
+        "aar.keepWindow": {
+          "type": "string",
+          "default": "exit",
+          "description": "运行结束后的操作(非 vscode 终端运行时可用), keyExit 按键退出, exit 直接退出, keep 保留控制台"
+        },
+        "aar.runInvscodeTerminal": {
+          "type": "boolean",
+          "default": false,
+          "description": "在 vscode 终端中运行"
+        }
       }
   },
     "keybindings": [
       {
-        "key": "ctrl+r",
+        "key": "f5",
         "command": "aar.runAll",
         "when": "editorTextFocus"
       }
@@ -60,7 +71,7 @@
       {
         "command": "aar.runAll",
         "category": "aardio",
-        "title": "运行此文件",
+        "title": "运行",
         "icon": {
           "light": "./img/run-light.png",
           "dark": "./img/run-dark.png"
