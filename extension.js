@@ -63,7 +63,7 @@ const activate = context => {
     });
 
     let cmd = `pushd ${config.aardioDir} && ${aar} ${codeFile} && popd`
-    let codeDir = editor ? path.parse(editor._documentData._uri.fsPath).dir : ''
+    let codeDir = editor ? path.parse(editor.document.uri.fsPath).dir : ''
     if(config.runInvscodeTerminal) { // true: 在 vscode 终端运行. false: 在新开 cmd 中运行. 新开 cmd 仿真度高.
       if (aarTerminal === null) {
         aarTerminal = vscode.window.createTerminal('aar');
